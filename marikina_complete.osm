@@ -35978,7 +35978,7 @@
     <tag k='name' v='Aquarius Street' />
     <tag k='not_flood_hazard' v='0' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-115559' action='modify'>
     <nd ref='-173353' />
@@ -46549,7 +46549,7 @@
     <tag k='name' v='FVR Road' />
     <tag k='not_flood_hazard' v='0' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-116261' action='modify'>
     <nd ref='-174009' />
@@ -54978,6 +54978,7 @@
     <nd ref='-170798' />
     <tag k='footway' v='crossing' />
     <tag k='highway' v='footway' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-116820' action='modify'>
     <nd ref='-169509' />
@@ -56675,6 +56676,7 @@
     <nd ref='-171450' />
     <tag k='footway' v='crossing' />
     <tag k='highway' v='footway' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-116937' action='modify'>
     <nd ref='-168853' />
@@ -59079,7 +59081,7 @@
     <tag k='name' v='FVR Road' />
     <tag k='not_flood_hazard' v='0' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-117094' action='modify'>
     <nd ref='-173997' />
@@ -59978,7 +59980,7 @@
     <tag k='name' v='FVR Road' />
     <tag k='not_flood_hazard' v='0' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-117158' action='modify'>
     <nd ref='-171457' />

@@ -206,6 +206,7 @@ def getRouteDirections(route, graph, safety_factors):
       maneuever = 'depart'
       instruction = getBearingString(bearing_after, name)
       direction.append({'maneuever':maneuever,
+                        'footway':footway,
                         'instruction':instruction,
                         'name':name,
                         'bearing_before':bearing_before,
@@ -233,6 +234,7 @@ def getRouteDirections(route, graph, safety_factors):
       else:
         instruction = getTurnDirection(bearing_before, bearing_after, name)
       direction.append({'maneuever':maneuever,
+                        'footway':footway,
                         'instruction':instruction,
                         'name':name,
                         'bearing_before':bearing_before,
@@ -248,6 +250,7 @@ def getRouteDirections(route, graph, safety_factors):
       maneuever = 'arrive'
       instruction = getTurnDirection(bearing_before, bearing_after, name) + " and arrive at destination"
       direction.append({'maneuever':maneuever,
+                        'footway':footway,
                         'instruction':instruction,
                         'name':name,
                         'bearing_before':bearing_before,

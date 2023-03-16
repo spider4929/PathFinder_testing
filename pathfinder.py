@@ -4,6 +4,7 @@ import polyline
 from heapq import heappop, heappush
 from itertools import count
 from datetime import datetime
+import requests
 
 #### FUNCTIONS ####
 
@@ -91,14 +92,19 @@ def _weight_function(G, weight):
     return lambda u, v, data: data.get(weight, 1)
 
 
-def api_profile(weather, profile):
-    new_profile = profile
-    now = datetime.now().hour
+def api_profile(weather, profile, adjust):
 
-    # If weather = clear:
-    # new_profile.pop("flood_hazard")
-    # if now not in [19,20,21,22,23,24,1,2,3,4,5]:
-    #    new_profile.pop("lighting")
+    new_profile = profile
+
+    if adjust:
+        now = datetime.now().hour
+
+        if weather not in [202, 212, 221, 502, 503, 504]:
+            new_profile.pop("not_flood_hazard")
+        if now not in [19, 20, 21, 22, 23, 24, 1, 2, 3, 4, 5]:
+            new_profile.pop("lighting")
+    else:
+        pass
     return new_profile
 
 
@@ -282,13 +288,15 @@ def getRouteDirections(route, graph, safety_factors):
     return direction
 
 
-def pathfinder(origin, destination):
+def pathfinder(source, goal, adjust):
 
     #### SETTINGS ####
 
     safety_factors = ['not_flood_hazard', 'pwd_friendly',
                       'cctv', 'landmark', 'lighting', 'not_major_road']
     osmnx.settings.useful_tags_way = safety_factors + ['name', 'footway']
+
+    # TODO: insert function to adjust profile weights depending on user preference\
 
     profile = {"not_flood_hazard": 0.5,
                "pwd_friendly": 0.5,
@@ -299,15 +307,26 @@ def pathfinder(origin, destination):
 
     # comes from application request
     origin = {
-        "y": origin[0],  # 14.635749969867808,
-        "x": origin[1]  # 121.09445094913893
+        "y": source[0],  # 14.635749969867808,
+        "x": source[1]  # 121.09445094913893
     }
     destination = {
-        "y": destination[0],  # 14.63056033942939,
-        "x": destination[1]  # 121.09807731641334
+        "y": goal[0],  # 14.63056033942939,
+        "x": goal[1]  # 121.09807731641334
     }
 
-    # TODO: insert function to adjust profile weights depending on user preference
+    params = {
+        'lat': source[0],
+        'long': source[1],
+        'API_key': '998183354bb6d9e4f0bf9a1ce02a8014'
+    }
+
+    api_result = requests.get(
+        f'https://api.openweathermap.org/data/2.5/weather?lat={params["lat"]}&lon={params["long"]}&appid={params["API_key"]}')
+
+    api_response = api_result.json()
+
+    weather_condition = api_response['weather'][0]['id']
 
     # retrieve map from database
     graph = osmnx.graph_from_xml('marikina_complete.osm', simplify=False)
@@ -316,7 +335,7 @@ def pathfinder(origin, destination):
     nodes, edges = osmnx.graph_to_gdfs(graph)
 
     # adjust weights profile depending on user pref and time & weather conditions
-    adjusted_profile = api_profile('clear', profile)
+    adjusted_profile = api_profile(weather_condition, profile, adjust)
 
     # create category "weight" for use in path finding
     edges['weight'] = edges.apply(
@@ -346,7 +365,7 @@ def pathfinder(origin, destination):
         'destination': [destination['y'], destination['x']],
         'length': getRouteLength(route, graph),
         'polyline': getPolyline(route, nodes),
-        'steps': getRouteDirections(route, graph, safety_factors)
+        'steps': getRouteDirections(route, graph, list(adjusted_profile.keys()))
     }
 
     return response

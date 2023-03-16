@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from pathfinder import pathfinder
 
 app = Flask(__name__)
@@ -9,14 +9,22 @@ def hello():
     return '<h1>PathFinder API running</h1>'
 
 
-@app.route("/route/<y_orig>,<x_orig>,<y_dest>,<x_dest>/")
-def find_path(y_orig, x_orig, y_dest, x_dest):
-    y_orig = float(y_orig)
-    x_orig = float(x_orig)
-    y_dest = float(y_dest)
-    x_dest = float(x_dest)
+@app.route("/route/")
+def find_path():
+    args = request.args
 
-    route = pathfinder([y_orig, x_orig], [y_dest, x_dest])
+    y_orig = float(args['y_orig'])
+    x_orig = float(args['x_orig'])
+    y_dest = float(args['y_dest'])
+    x_dest = float(args['x_dest'])
+
+    try:
+        if args['adjust']:
+            adjust = False
+    except:
+        adjust = True
+
+    route = pathfinder([y_orig, x_orig], [y_dest, x_dest], adjust)
 
     return route
 

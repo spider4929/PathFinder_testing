@@ -164,7 +164,7 @@ def getTurnDirection(heading, true_bearing, name):
         instruction = 'Turn Right '
     if relative_bearing > 180 and relative_bearing <= 315:
         instruction = 'Turn Left '
-    if relative_bearing > 315 and relative_bearing <= 345:
+    if relative_bearing > 315 and relative_bearing < 345:
         instruction = 'Turn slightly left '
     if name == '':
         return instruction
@@ -221,8 +221,8 @@ def getRouteDirections(route, graph, safety_factors):
       bearing_after = step.get("bearing")
       maneuever = getManeuever(bearing_before, bearing_after)
       
-      if before_name == name and before_maneuever == 'straight' and maneuever == 'straight':
-        direction[-1]["distance"] + distance
+      if before_name == name and before_maneuever == maneuever:
+        direction[-1]["distance"] += distance
         for factor in present_factors:
             if factor not in direction[-1]["factors_present"]:
                 direction[-1]["factors_present"].append(factor)    

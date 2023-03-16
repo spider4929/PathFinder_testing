@@ -6459,7 +6459,7 @@
   <node id='-170719' lat='14.6579454' lon='121.0996681' />
   <node id='-170720' lat='14.63837778873' lon='121.09812461885' />
   <node id='-170721' action='modify' lat='14.63461340173' lon='121.09837621182'>
-    <tag k='name' v='Jesús dela Peña Chapel' />
+    <tag k='name' v='Marikina Sport Center' />
     <tag k='safety_factor' v='landmark' />
     <tag k='tourism' v='attraction' />
   </node>

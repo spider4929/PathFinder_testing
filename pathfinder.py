@@ -131,11 +131,11 @@ def getBearingString(degrees, name):
   instruction = None
   if degrees < 45:
     instruction = 'Head North '
-  if degrees < 135:
+  elif degrees < 135:
     instruction = 'Head East '
-  if degrees < 225:
+  elif degrees < 225:
     instruction = 'Head South '
-  if degrees < 315:
+  elif degrees < 315:
     instruction = 'Head West '
   else:
     instruction = 'Head North '

@@ -229,7 +229,7 @@ def getRouteDirections(route, graph, safety_factors):
         continue
       if footway == 'crossing':
         instruction = 'Cross the street'
-      if footway == 'footbridge':
+      elif footway == 'footbridge':
         instruction = 'Cross the street via the footbridge'
       else:
         instruction = getTurnDirection(bearing_before, bearing_after, name)

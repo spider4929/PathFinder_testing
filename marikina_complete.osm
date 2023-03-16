@@ -32029,7 +32029,7 @@
     <tag k='name' v='V. Santos' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-115302' action='modify'>
     <nd ref='-175108' />
@@ -32526,7 +32526,7 @@
     <tag k='name' v='Exequiel Street' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-115335' action='modify'>
     <nd ref='-168715' />
@@ -41697,7 +41697,7 @@
     <tag k='name' v='Cepeda Street' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-115927'>
     <nd ref='-173160' />
@@ -43828,7 +43828,7 @@
     <tag k='name' v='Exequiel Street' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-116073' action='modify'>
     <nd ref='-168878' />
@@ -51045,7 +51045,7 @@
     <tag k='name' v='Flamingo' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-116553' action='modify'>
     <nd ref='-173779' />
@@ -53075,7 +53075,7 @@
     <tag k='name' v='Exequiel Street' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-116693' action='modify'>
     <nd ref='-171459' />
@@ -56189,7 +56189,7 @@
     <tag k='name' v='V. Santos' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-116899' action='modify'>
     <nd ref='-172081' />
@@ -60545,7 +60545,7 @@
     <tag k='name' v='Shoe Avenue' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-117194' action='modify'>
     <nd ref='-169490' />
@@ -61724,7 +61724,7 @@
     <tag k='name' v='Exequiel Street' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-117272' action='modify'>
     <nd ref='-171269' />
@@ -62187,7 +62187,7 @@
     <tag k='name' v='Exequiel Street' />
     <tag k='not_flood_hazard' v='1' />
     <tag k='not_major_road' v='1' />
-    <tag k='pwd_friendly' v='0' />
+    <tag k='pwd_friendly' v='1' />
   </way>
   <way id='-117302' action='modify'>
     <nd ref='-174339' />

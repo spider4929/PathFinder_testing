@@ -58406,6 +58406,7 @@
     <tag k='pwd_friendly' v='0' />
   </way>
   <way id='-117053' action='modify'>
+    <nd ref='-169389' />
     <nd ref='-171244' />
     <nd ref='-173452' />
     <nd ref='-174028' />

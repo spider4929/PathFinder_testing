@@ -127,7 +127,16 @@ def getCoordinates(route, nodes):
     df = df.drop('geometry', index=None, axis=1)
     coordinates = list(zip(*map(df.get, df)))
 
-    return coordinates
+    final_coords = []
+
+    for coordinate in coordinates:
+        coord = {
+            'latitude': coordinate[0],
+            'longitude': coordinate[1]
+        }
+        final_coords.append(coord)
+
+    return final_coords
 
 # Returns encoded polyline using the polyline library, requires input as an array of tuples
 
@@ -288,7 +297,7 @@ def getRouteDirections(route, graph, safety_factors):
     return direction
 
 
-def pathfinder(source, goal, adjust):
+def pathfinder(source, goal, adjust, profile):
 
     #### SETTINGS ####
 
@@ -296,14 +305,7 @@ def pathfinder(source, goal, adjust):
                       'cctv', 'landmark', 'lighting', 'not_major_road']
     osmnx.settings.useful_tags_way = safety_factors + ['name', 'footway']
 
-    # TODO: insert function to adjust profile weights depending on user preference\
-
-    profile = {"not_flood_hazard": 0.5,
-               "pwd_friendly": 0.5,
-               "cctv": 0.5,
-               "landmark": 0.5,
-               "lighting": 0.5,
-               "not_major_road": 0.5}
+    print(profile)
 
     # comes from application request
     origin = {
@@ -361,10 +363,11 @@ def pathfinder(source, goal, adjust):
     route = route[1]
 
     response = {
+        'time': datetime.now(),
         'origin': [origin['y'], origin['x']],
         'destination': [destination['y'], destination['x']],
         'length': getRouteLength(route, graph),
-        'polyline': getPolyline(route, nodes),
+        'coordinates': getCoordinates(route, nodes),
         'steps': getRouteDirections(route, graph, list(adjusted_profile.keys()))
     }
 

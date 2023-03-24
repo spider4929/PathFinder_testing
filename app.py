@@ -9,7 +9,7 @@ def hello():
     return '<h1>PathFinder API running</h1>'
 
 
-@app.route("/route/")
+@app.route("/route/", methods=["POST"])
 def find_path():
     args = request.get_json()
     orig = args['sourceCoords']

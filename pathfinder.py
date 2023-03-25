@@ -122,20 +122,15 @@ def adjust_weight(length, row, profile):
 
 
 def getCoordinates(route, nodes):
-    df = nodes.query('osmid in @route')
-    # Drop geometry column
-    df = df.drop('geometry', index=None, axis=1)
-    coordinates = list(zip(*map(df.get, df)))
-
     final_coords = []
 
-    for coordinate in coordinates:
+    for id in route:
         coord = {
-            'latitude': coordinate[0],
-            'longitude': coordinate[1]
-        }
+                'latitude': nodes.filter(items=[id], axis=0).y.item(),
+                'longitude': nodes.filter(items=[id], axis=0).x.item()
+            }
         final_coords.append(coord)
-
+        
     return final_coords
 
 # Returns encoded polyline using the polyline library, requires input as an array of tuples

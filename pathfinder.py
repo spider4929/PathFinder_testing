@@ -238,8 +238,8 @@ def getRouteDirections(route, graph, safety_factors):
                               'footway': footway,
                               'instruction': instruction,
                               'name': name,
-                              'bearing_before': bearing_before,
-                              'bearing_after': bearing_after,
+                            #   'bearing_before': bearing_before,
+                            #   'bearing_after': bearing_after,
                               'distance': distance,
                               'factors_present': present_factors})
             continue
@@ -267,8 +267,8 @@ def getRouteDirections(route, graph, safety_factors):
                               'footway': footway,
                               'instruction': instruction,
                               'name': name,
-                              'bearing_before': bearing_before,
-                              'bearing_after': bearing_after,
+                            #   'bearing_before': bearing_before,
+                            #   'bearing_after': bearing_after,
                               'distance': distance,
                               'factors_present': present_factors})
             continue
@@ -284,8 +284,8 @@ def getRouteDirections(route, graph, safety_factors):
                               'footway': footway,
                               'instruction': instruction,
                               'name': name,
-                              'bearing_before': bearing_before,
-                              'bearing_after': bearing_after,
+                            #   'bearing_before': bearing_before,
+                            #   'bearing_after': bearing_after,
                               'distance': distance,
                               'factors_present': present_factors})
 

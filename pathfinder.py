@@ -126,11 +126,11 @@ def getCoordinates(route, nodes):
 
     for id in route:
         coord = {
-                'latitude': nodes.filter(items=[id], axis=0).y.item(),
-                'longitude': nodes.filter(items=[id], axis=0).x.item()
-            }
+            'latitude': nodes.filter(items=[id], axis=0).y.item(),
+            'longitude': nodes.filter(items=[id], axis=0).x.item()
+        }
         final_coords.append(coord)
-        
+
     return final_coords
 
 # Returns encoded polyline using the polyline library, requires input as an array of tuples
@@ -238,8 +238,8 @@ def getRouteDirections(route, graph, safety_factors):
                               'footway': footway,
                               'instruction': instruction,
                               'name': name,
-                            #   'bearing_before': bearing_before,
-                            #   'bearing_after': bearing_after,
+                              #   'bearing_before': bearing_before,
+                              #   'bearing_after': bearing_after,
                               'distance': distance,
                               'factors_present': present_factors})
             continue
@@ -267,8 +267,8 @@ def getRouteDirections(route, graph, safety_factors):
                               'footway': footway,
                               'instruction': instruction,
                               'name': name,
-                            #   'bearing_before': bearing_before,
-                            #   'bearing_after': bearing_after,
+                              #   'bearing_before': bearing_before,
+                              #   'bearing_after': bearing_after,
                               'distance': distance,
                               'factors_present': present_factors})
             continue
@@ -284,8 +284,8 @@ def getRouteDirections(route, graph, safety_factors):
                               'footway': footway,
                               'instruction': instruction,
                               'name': name,
-                            #   'bearing_before': bearing_before,
-                            #   'bearing_after': bearing_after,
+                              #   'bearing_before': bearing_before,
+                              #   'bearing_after': bearing_after,
                               'distance': distance,
                               'factors_present': present_factors})
 
@@ -299,8 +299,6 @@ def pathfinder(source, goal, adjust, profile):
     safety_factors = ['not_flood_hazard', 'pwd_friendly',
                       'cctv', 'landmark', 'lighting', 'not_major_road']
     osmnx.settings.useful_tags_way = safety_factors + ['name', 'footway']
-
-    print(profile)
 
     # comes from application request
     origin = {
@@ -355,15 +353,31 @@ def pathfinder(source, goal, adjust, profile):
         weight='weight'
     )
 
+    shortest_route = bidirectional_dijkstra(
+        final_graph,
+        origin_node_id,
+        destination_node_id,
+        weight='length'
+    )
+
     route = route[1]
+    shortest_route = shortest_route[1]
 
     response = {
         'time': datetime.now(),
         'origin': [origin['y'], origin['x']],
         'destination': [destination['y'], destination['x']],
-        'length': getRouteLength(route, graph),
-        'coordinates': getCoordinates(route, nodes),
-        'steps': getRouteDirections(route, graph, list(adjusted_profile.keys()))
+        'optimized_route': {
+            'length': getRouteLength(route, graph),
+            'coordinates': getCoordinates(route, nodes),
+            'steps': getRouteDirections(route, graph, list(adjusted_profile.keys()))
+        },
+        'shortest_route': {
+            'length': getRouteLength(shortest_route, graph),
+            'coordinates': getCoordinates(shortest_route, nodes),
+            'steps': getRouteDirections(shortest_route, graph, list(adjusted_profile.keys()))
+        }
+
     }
 
     return response

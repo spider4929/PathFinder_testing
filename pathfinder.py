@@ -121,8 +121,8 @@ def adjust_weight(length, row, profile):
 # Returns coordinates of route as an array of tuples
 
 
-def getCoordinates(route, nodes):
-    final_coords = []
+def getCoordinates(route, nodes, origin, destination):
+    final_coords = [origin]
 
     for id in route:
         coord = {
@@ -130,6 +130,8 @@ def getCoordinates(route, nodes):
             'longitude': nodes.filter(items=[id], axis=0).x.item()
         }
         final_coords.append(coord)
+
+    final_coords.append(destination)
 
     return final_coords
 
@@ -302,12 +304,12 @@ def pathfinder(source, goal, adjust, profile):
 
     # comes from application request
     origin = {
-        "y": source[0],  # 14.635749969867808,
-        "x": source[1]  # 121.09445094913893
+        "latitude": source[0],  # 14.635749969867808,
+        "longitude": source[1]  # 121.09445094913893
     }
     destination = {
-        "y": goal[0],  # 14.63056033942939,
-        "x": goal[1]  # 121.09807731641334
+        "latitude": goal[0],  # 14.63056033942939,
+        "longitude": goal[1]  # 121.09807731641334
     }
 
     params = {
@@ -342,9 +344,9 @@ def pathfinder(source, goal, adjust, profile):
         edges
     )
 
-    origin_node_id = osmnx.nearest_nodes(final_graph, origin['x'], origin['y'])
+    origin_node_id = osmnx.nearest_nodes(final_graph, origin['latitude'], origin['longitude'])
     destination_node_id = osmnx.nearest_nodes(
-        final_graph, destination['x'], destination['y'])
+        final_graph, destination['latitude'], destination['longitude'])
 
     route = bidirectional_dijkstra(
         final_graph,
@@ -369,12 +371,12 @@ def pathfinder(source, goal, adjust, profile):
         'destination': [destination['y'], destination['x']],
         'optimized_route': {
             'length': getRouteLength(route, graph),
-            'coordinates': getCoordinates(route, nodes),
+            'coordinates': getCoordinates(route, nodes, origin, destination),
             'steps': getRouteDirections(route, graph, list(adjusted_profile.keys()))
         },
         'shortest_route': {
             'length': getRouteLength(shortest_route, graph),
-            'coordinates': getCoordinates(shortest_route, nodes),
+            'coordinates': getCoordinates(shortest_route, nodes, origin, destination),
             'steps': getRouteDirections(shortest_route, graph, list(adjusted_profile.keys()))
         }
 

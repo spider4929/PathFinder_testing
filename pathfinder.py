@@ -122,7 +122,12 @@ def adjust_weight(length, row, profile):
 
 
 def getCoordinates(route, nodes, origin, destination):
-    final_coords = [origin]
+    final_coords = []
+
+    final_coords.append({
+        'latitude': origin['y'],
+        'longitude': origin['x']
+    })
 
     for id in route:
         coord = {
@@ -131,7 +136,10 @@ def getCoordinates(route, nodes, origin, destination):
         }
         final_coords.append(coord)
 
-    final_coords.append(destination)
+    final_coords.append({
+        'latitude': destination['y'],
+        'longitude': destination['x']
+    })
 
     return final_coords
 
@@ -304,12 +312,12 @@ def pathfinder(source, goal, adjust, profile):
 
     # comes from application request
     origin = {
-        "latitude": source[0],  # 14.635749969867808,
-        "longitude": source[1]  # 121.09445094913893
+        "y": source[0],  # 14.635749969867808,
+        "x": source[1]  # 121.09445094913893
     }
     destination = {
-        "latitude": goal[0],  # 14.63056033942939,
-        "longitude": goal[1]  # 121.09807731641334
+        "y": goal[0],  # 14.63056033942939,
+        "x": goal[1]  # 121.09807731641334
     }
 
     params = {
@@ -344,9 +352,9 @@ def pathfinder(source, goal, adjust, profile):
         edges
     )
 
-    origin_node_id = osmnx.nearest_nodes(final_graph, origin['latitude'], origin['longitude'])
+    origin_node_id = osmnx.nearest_nodes(final_graph, origin['x'], origin['y'])
     destination_node_id = osmnx.nearest_nodes(
-        final_graph, destination['latitude'], destination['longitude'])
+        final_graph, destination['x'], destination['y'])
 
     route = bidirectional_dijkstra(
         final_graph,

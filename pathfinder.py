@@ -301,6 +301,28 @@ def getRouteDirections(route, graph, safety_factors):
 
     return direction
 
+def getSafetyFactorCoverage(steps, length, safety_factors):
+    factor_coverage = {
+        'not_flood_hazard': 0,
+        'pwd_friendly': 0,
+        'cctv': 0,
+        'landmark': 0,
+        'lighting': 0,
+        'not_major_road': 0
+    }
+
+    for step in steps:
+        for factor in safety_factors:
+            if factor in step['factors_present']:
+                factor_coverage[factor] += step['distance'] 
+            else:
+                pass
+
+    for factor in safety_factors:
+        factor_coverage[factor] = round((factor_coverage[factor]/length)*100)
+
+    return factor_coverage
+
 
 def pathfinder(source, goal, adjust, profile):
 
@@ -378,11 +400,21 @@ def pathfinder(source, goal, adjust, profile):
         'origin': [origin['y'], origin['x']],
         'destination': [destination['y'], destination['x']],
         'optimized_route': {
+            'coverage': getSafetyFactorCoverage(
+                            getRouteDirections(route, graph, list(adjusted_profile.keys())), 
+                            getRouteLength(route, graph), 
+                            safety_factors
+                        ),
             'length': getRouteLength(route, graph),
             'coordinates': getCoordinates(route, nodes, origin, destination),
             'steps': getRouteDirections(route, graph, list(adjusted_profile.keys()))
         },
         'shortest_route': {
+            'coverage': getSafetyFactorCoverage(
+                            getRouteDirections(shortest_route, graph, list(adjusted_profile.keys())), 
+                            getRouteLength(shortest_route, graph), 
+                            safety_factors
+                        ),
             'length': getRouteLength(shortest_route, graph),
             'coordinates': getCoordinates(shortest_route, nodes, origin, destination),
             'steps': getRouteDirections(shortest_route, graph, list(adjusted_profile.keys()))

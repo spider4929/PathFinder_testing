@@ -374,20 +374,25 @@ def pathfinder(source, goal, adjust, profile):
         edges
     )
 
-    origin_node_id = osmnx.nearest_nodes(final_graph, origin['x'], origin['y'])
+    origin_node_id = osmnx.nearest_nodes(final_graph, origin['x'], origin['y'], return_dist=True)
     destination_node_id = osmnx.nearest_nodes(
-        final_graph, destination['x'], destination['y'])
+        final_graph, destination['x'], destination['y'], return_dist=True)
+
+    if origin_node_id[1] >= 250 or destination_node_id[1] >= 250:
+        return "Source or destination invalid", 400
+    else:
+        pass
 
     route = bidirectional_dijkstra(
         final_graph,
-        origin_node_id,
+        origin_node_id[0],
         destination_node_id,
         weight='weight'
     )
 
     shortest_route = bidirectional_dijkstra(
         final_graph,
-        origin_node_id,
+        origin_node_id[0],
         destination_node_id,
         weight='length'
     )
@@ -422,4 +427,4 @@ def pathfinder(source, goal, adjust, profile):
 
     }
 
-    return response
+    return response, 200

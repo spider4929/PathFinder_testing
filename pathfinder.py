@@ -321,6 +321,8 @@ def getSafetyFactorCoverage(steps, length, safety_factors):
     for factor in safety_factors:
         factor_coverage[factor] = round((factor_coverage[factor]/length)*100)
 
+    factor_coverage['average'] = 75
+
     return factor_coverage
 
 

@@ -301,7 +301,8 @@ def getRouteDirections(route, graph, safety_factors):
 
     return direction
 
-def getSafetyFactorCoverage(steps, length, safety_factors):
+
+def getSafetyFactorCoverage(steps, length, safety_factors, profile):
     factor_coverage = {
         'not_flood_hazard': 0,
         'pwd_friendly': 0,
@@ -310,18 +311,25 @@ def getSafetyFactorCoverage(steps, length, safety_factors):
         'lighting': 0,
         'not_major_road': 0
     }
+    temp = 0
 
     for step in steps:
         for factor in safety_factors:
             if factor in step['factors_present']:
-                factor_coverage[factor] += step['distance'] 
+                factor_coverage[factor] += step['distance']
             else:
                 pass
 
     for factor in safety_factors:
         factor_coverage[factor] = round((factor_coverage[factor]/length)*100)
 
-    factor_coverage['average'] = 75
+    for item in profile.keys():
+        if item in factor_coverage.keys():
+            temp += factor_coverage[item] * profile[item]
+
+    temp = temp/sum(profile.values())
+
+    factor_coverage['average'] = round(temp)
 
     return factor_coverage
 
@@ -376,11 +384,12 @@ def pathfinder(source, goal, adjust, profile):
         edges
     )
 
-    origin_node_id = osmnx.nearest_nodes(final_graph, origin['x'], origin['y'], return_dist=True)
+    origin_node_id = osmnx.nearest_nodes(
+        final_graph, origin['x'], origin['y'], return_dist=True)
     destination_node_id = osmnx.nearest_nodes(
         final_graph, destination['x'], destination['y'], return_dist=True)
 
-    #checks if coordinates passed is too far from area covered by map
+    # checks if coordinates passed is too far from area covered by map
     if origin_node_id[1] >= 250 or destination_node_id[1] >= 250:
         return "Source or destination invalid", 400
     else:
@@ -409,20 +418,24 @@ def pathfinder(source, goal, adjust, profile):
         'destination': [destination['y'], destination['x']],
         'optimized_route': {
             'coverage': getSafetyFactorCoverage(
-                            getRouteDirections(route, graph, list(adjusted_profile.keys())), 
-                            getRouteLength(route, graph), 
-                            safety_factors
-                        ),
+                getRouteDirections(route, graph, list(
+                    adjusted_profile.keys())),
+                getRouteLength(route, graph),
+                safety_factors,
+                adjusted_profile
+            ),
             'length': getRouteLength(route, graph),
             'coordinates': getCoordinates(route, nodes, origin, destination),
             'steps': getRouteDirections(route, graph, list(adjusted_profile.keys()))
         },
         'shortest_route': {
             'coverage': getSafetyFactorCoverage(
-                            getRouteDirections(shortest_route, graph, list(adjusted_profile.keys())), 
-                            getRouteLength(shortest_route, graph), 
-                            safety_factors
-                        ),
+                getRouteDirections(shortest_route, graph,
+                                   list(adjusted_profile.keys())),
+                getRouteLength(shortest_route, graph),
+                safety_factors,
+                adjusted_profile
+            ),
             'length': getRouteLength(shortest_route, graph),
             'coordinates': getCoordinates(shortest_route, nodes, origin, destination),
             'steps': getRouteDirections(shortest_route, graph, list(adjusted_profile.keys()))

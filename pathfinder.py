@@ -209,7 +209,7 @@ def getTurnDirection(heading, true_bearing, name):
     return instruction + 'onto ' + name
 
 
-def getRouteDirections(route, graph, safety_factors):
+def getRouteDirections(route, nodes, graph, safety_factors):
     # generate edge bearings for graph
     bearings_graph = osmnx.bearing.add_edge_bearings(graph, precision=1)
     # Generate a dictionary of relevant keys of the route for directions
@@ -225,8 +225,9 @@ def getRouteDirections(route, graph, safety_factors):
     footway = None
     bearing_before = 0
     bearing_after = 0
+    count = 0
     # Start parsing
-    for step in steps:
+    for count, step in enumerate(steps):
         present_factors = []
         before_name = name
         before_maneuever = maneuever
@@ -251,7 +252,13 @@ def getRouteDirections(route, graph, safety_factors):
                               #   'bearing_before': bearing_before,
                               #   'bearing_after': bearing_after,
                               'distance': distance,
-                              'factors_present': present_factors})
+                              'factors_present': present_factors,
+                              'coordinates': [
+                                  nodes.filter(
+                                      items=[route[count]], axis=0).y.item(),
+                                  nodes.filter(
+                                      items=[route[count]], axis=0).x.item()
+                              ]})
             continue
 
         # If the step is any steps in between the first and last step
@@ -280,7 +287,13 @@ def getRouteDirections(route, graph, safety_factors):
                               #   'bearing_before': bearing_before,
                               #   'bearing_after': bearing_after,
                               'distance': distance,
-                              'factors_present': present_factors})
+                              'factors_present': present_factors,
+                              'coordinates': [
+                                  nodes.filter(
+                                      items=[route[count]], axis=0).y.item(),
+                                  nodes.filter(
+                                      items=[route[count]], axis=0).x.item()
+                              ]})
             continue
 
         # If the step is the last step
@@ -297,7 +310,13 @@ def getRouteDirections(route, graph, safety_factors):
                               #   'bearing_before': bearing_before,
                               #   'bearing_after': bearing_after,
                               'distance': distance,
-                              'factors_present': present_factors})
+                              'factors_present': present_factors,
+                              'coordinates': [
+                                  nodes.filter(
+                                      items=[route[count]], axis=0).y.item(),
+                                  nodes.filter(
+                                      items=[route[count]], axis=0).x.item()
+                              ]})
 
     return direction
 
@@ -333,6 +352,8 @@ def getSafetyFactorCoverage(steps, length, safety_factors, profile):
 
     return factor_coverage
 
+##### main pathfinding function ####
+
 
 def pathfinder(source, goal, adjust, profile):
 
@@ -366,7 +387,8 @@ def pathfinder(source, goal, adjust, profile):
     weather_condition = api_response['weather'][0]['id']
 
     # retrieve map from database
-    graph = osmnx.graph_from_xml('marikina_complete.osm', simplify=False)
+    graph = osmnx.graph_from_xml(
+        'C://Users//kjqb4//Documents//GitHub Projects//design-project//Pathfinder_API//marikina_complete.osm', simplify=False)
 
     # get all edges for weight adjustment
     nodes, edges = osmnx.graph_to_gdfs(graph)
@@ -418,7 +440,7 @@ def pathfinder(source, goal, adjust, profile):
         'destination': [destination['y'], destination['x']],
         'optimized_route': {
             'coverage': getSafetyFactorCoverage(
-                getRouteDirections(route, graph, list(
+                getRouteDirections(route, nodes, graph, list(
                     adjusted_profile.keys())),
                 getRouteLength(route, graph),
                 safety_factors,
@@ -426,11 +448,11 @@ def pathfinder(source, goal, adjust, profile):
             ),
             'length': getRouteLength(route, graph),
             'coordinates': getCoordinates(route, nodes, origin, destination),
-            'steps': getRouteDirections(route, graph, list(adjusted_profile.keys()))
+            'steps': getRouteDirections(route, nodes, graph, list(adjusted_profile.keys()))
         },
         'shortest_route': {
             'coverage': getSafetyFactorCoverage(
-                getRouteDirections(shortest_route, graph,
+                getRouteDirections(shortest_route, nodes, graph,
                                    list(adjusted_profile.keys())),
                 getRouteLength(shortest_route, graph),
                 safety_factors,
@@ -438,9 +460,142 @@ def pathfinder(source, goal, adjust, profile):
             ),
             'length': getRouteLength(shortest_route, graph),
             'coordinates': getCoordinates(shortest_route, nodes, origin, destination),
-            'steps': getRouteDirections(shortest_route, graph, list(adjusted_profile.keys()))
+            'steps': getRouteDirections(shortest_route, nodes, graph, list(adjusted_profile.keys()))
         }
 
+    }
+
+    return response, 200
+
+##### text-to-speech for safest route ####
+
+def text_to_speech_safest(source, goal, adjust, profile):
+
+    #### SETTINGS ####
+
+    safety_factors = ['not_flood_hazard', 'pwd_friendly',
+                      'cctv', 'landmark', 'lighting', 'not_major_road']
+    osmnx.settings.useful_tags_way = safety_factors + ['name', 'footway']
+
+    # comes from application request
+    origin = {
+        "y": source[0],  # 14.635749969867808,
+        "x": source[1]  # 121.09445094913893
+    }
+    destination = {
+        "y": goal[0],  # 14.63056033942939,
+        "x": goal[1]  # 121.09807731641334
+    }
+
+    params = {
+        'lat': source[0],
+        'long': source[1],
+        'API_key': '998183354bb6d9e4f0bf9a1ce02a8014'
+    }
+
+    api_result = requests.get(
+        f'https://api.openweathermap.org/data/2.5/weather?lat={params["lat"]}&lon={params["long"]}&appid={params["API_key"]}')
+
+    api_response = api_result.json()
+
+    weather_condition = api_response['weather'][0]['id']
+
+    # retrieve map from database
+    graph = osmnx.graph_from_xml(
+        'C://Users//kjqb4//Documents//GitHub Projects//design-project//Pathfinder_API//marikina_complete.osm', simplify=False)
+
+    # get all edges for weight adjustment
+    nodes, edges = osmnx.graph_to_gdfs(graph)
+
+    # adjust weights profile depending on user pref and time & weather conditions
+    adjusted_profile = api_profile(weather_condition, profile, adjust)
+
+    # create category "weight" for use in path finding
+    edges['weight'] = edges.apply(
+        lambda row: adjust_weight(row['length'], row, adjusted_profile), axis=1
+    )
+
+    final_graph = osmnx.graph_from_gdfs(
+        osmnx.graph_to_gdfs(graph, edges=False),
+        edges
+    )
+
+    origin_node_id = osmnx.nearest_nodes(
+        final_graph, origin['x'], origin['y'], return_dist=True)
+    destination_node_id = osmnx.nearest_nodes(
+        final_graph, destination['x'], destination['y'], return_dist=True)
+
+    # checks if coordinates passed is too far from area covered by map
+    if origin_node_id[1] >= 250 or destination_node_id[1] >= 250:
+        return "Source or destination invalid", 400
+    else:
+        pass
+
+    route = bidirectional_dijkstra(
+        final_graph,
+        origin_node_id[0],
+        destination_node_id[0],
+        weight='weight'
+    )
+
+    route = route[1]
+
+    response = {
+        'coordinates': getCoordinates(route, nodes, origin, destination),
+        'steps': getRouteDirections(route, nodes, graph, list(adjusted_profile.keys()))
+    }
+
+    return response, 200
+
+##### text-to-speech for fastest route ####
+
+def text_to_speech_fastest(source, goal):
+
+    #### SETTINGS ####
+
+    safety_factors = ['not_flood_hazard', 'pwd_friendly',
+                      'cctv', 'landmark', 'lighting', 'not_major_road']
+    osmnx.settings.useful_tags_way = safety_factors + ['name', 'footway']
+
+    # comes from application request
+    origin = {
+        "y": source[0],  # 14.635749969867808,
+        "x": source[1]  # 121.09445094913893
+    }
+    destination = {
+        "y": goal[0],  # 14.63056033942939,
+        "x": goal[1]  # 121.09807731641334
+    }
+
+    # retrieve map from database
+    graph = osmnx.graph_from_xml(
+        'C://Users//kjqb4//Documents//GitHub Projects//design-project//Pathfinder_API//marikina_complete.osm', simplify=False)
+
+    # get all edges for weight adjustment
+    nodes, edges = osmnx.graph_to_gdfs(graph)
+
+    origin_node_id = osmnx.nearest_nodes(
+        graph, origin['x'], origin['y'], return_dist=True)
+    destination_node_id = osmnx.nearest_nodes(
+        graph, destination['x'], destination['y'], return_dist=True)
+
+    # checks if coordinates passed is too far from area covered by map
+    if origin_node_id[1] >= 250 or destination_node_id[1] >= 250:
+        return "Source or destination invalid", 400
+    else:
+        pass
+
+    route = bidirectional_dijkstra(
+        graph,
+        origin_node_id[0],
+        destination_node_id[0],
+    )
+
+    route = route[1]
+
+    response = {
+        'coordinates': getCoordinates(route, nodes, origin, destination),
+        'steps': getRouteDirections(route, nodes, graph, safety_factors)
     }
 
     return response, 200

@@ -346,7 +346,10 @@ def getSafetyFactorCoverage(steps, length, safety_factors, profile):
         if item in factor_coverage.keys():
             temp += factor_coverage[item] * profile[item]
 
-    temp = temp/sum(profile.values())
+    if sum(profile.values()) == 0:
+        temp = sum(factor_coverage.values())/6
+    else:
+        temp = temp/sum(profile.values())
 
     factor_coverage['average'] = round(temp)
 

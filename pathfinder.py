@@ -97,11 +97,13 @@ def api_profile(weather, profile, adjust):
     new_profile = profile
 
     if adjust:
-        now = datetime.now().hour
+        now = datetime.now().hour + 8
+        if now >= 24:
+            now = now - 24
 
         if weather not in [202, 212, 221, 502, 503, 504]:
             new_profile.pop("not_flood_hazard")
-        if now not in [19, 20, 21, 22, 23, 24, 1, 2, 3, 4, 5]:
+        if now not in [19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5]:
             new_profile.pop("lighting")
     else:
         pass
@@ -436,6 +438,27 @@ def pathfinder(source, goal, adjust, profile):
 
     route = route[1]
     shortest_route = shortest_route[1]
+
+    compare_route = getSafetyFactorCoverage(
+                getRouteDirections(route, nodes, graph, list(
+                    adjusted_profile.keys())),
+                getRouteLength(route, graph),
+                safety_factors,
+                adjusted_profile
+            )
+    
+    compare_shortest_route = getSafetyFactorCoverage(
+                getRouteDirections(shortest_route, nodes, graph,
+                                   list(adjusted_profile.keys())),
+                getRouteLength(shortest_route, graph),
+                safety_factors,
+                adjusted_profile
+            )
+
+    if compare_route['average'] < compare_shortest_route['average']:
+        temp = route
+        route = shortest_route
+        shortest_route = temp
 
     response = {
         'time': datetime.now(),
